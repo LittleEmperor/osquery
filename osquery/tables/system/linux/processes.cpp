@@ -176,6 +176,28 @@ void genProcessMap(const std::string& pid, QueryData& results) {
       if (addresses.size() >= 2) {
         r["start"] = "0x" + addresses[0];
         r["end"] = "0x" + addresses[1];
+        int sz = std::stoull(addresses[1], 0, 16) - std::stoull(addresses[0], 0, 16);
+        int n = 0;
+        if(sz >= (1<<30)){
+            n = (sz>>30);
+            sz -= (n<<30);
+            r["size"] += std::to_string(n) + "G";
+        }
+        if(sz >= (1<<20)){
+            n = (sz>>20);
+            sz -= (n<<20);
+            r["size"] += std::to_string(n) + "M";
+        }
+        if(sz >= (1<<10)){
+            n = (sz>>10);
+            sz -= (n<<10);
+            r["size"] += std::to_string(n) + "K";
+        }
+        if(sz){
+			// 4K unit size, can NOT reach here
+            //r["size"] += std::to_string(sz);
+            r["size"] = "ERROR size";
+        }
       } else {
         // Problem with the address format.
         continue;
